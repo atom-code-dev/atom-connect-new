@@ -64,6 +64,10 @@ export const authOptions = {
   session: {
     strategy: "jwt" as const,
   },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+    encryption: true,
+  },
   callbacks: {
     async jwt({ token, user, account }) {
       // Persist the OAuth access_token and user id to the token right after signin
@@ -101,6 +105,7 @@ export const authOptions = {
     signIn: "/login",
     signUp: "/register",
   },
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
 }
 
 // Export the NextAuth handler

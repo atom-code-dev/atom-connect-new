@@ -46,13 +46,6 @@ export default function AdminPage() {
   const [error, setError] = useState("")
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-  }, [status, router]);
-
-  useEffect(() => {
     if (isAuthenticated && user?.role === "ADMIN") {
       fetchDashboardData()
     }
