@@ -19,13 +19,6 @@ export default function DashboardPage() {
     setIsMounted(true);
   }, []);
 
-  // Only redirect to login if not authenticated and not loading
-  useEffect(() => {
-    if (isMounted && status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, isMounted, router]);
-
   // Don't render anything during SSR or before mount
   if (!isMounted) {
     return (

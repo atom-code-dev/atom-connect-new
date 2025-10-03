@@ -1,18 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Simple protection: only redirect if someone tries to access dashboard directly
-  // This is a minimal approach to avoid redirect loops
-  if (pathname.startsWith("/dashboard") && !pathname.includes("/api/")) {
-    // Check if we have a session cookie (simple check)
-    const hasSessionCookie = request.cookies.get("next-auth.session-token") || 
-                           request.cookies.get("__Secure-next-auth.session-token");
+  // Public paths that don't require authentication
+  const publicPaths = ["/", "/login", "/register-organization"];
+  
+  // If the path is public, allow access
+  if (publicPaths.includes(pathname) || pathname.startsWith("/api/auth")) {
+    return NextResponse.next();
+  }
+  
+  // Check if the path is a dashboard or protected route
+  if (pathname.startsWith("/dashboard") || 
+      pathname.startsWith("/admin") || 
+      pathname.startsWith("/freelancer") || 
+      pathname.startsWith("/organization") || 
+      pathname.startsWith("/maintainer") ||
+      pathname.startsWith("/complete-freelancer-profile")) {
     
-    if (!hasSessionCookie) {
+    try {
+      // Check authentication using NextAuth
+      const session = await auth();
+      
+      if (!session) {
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackURL", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch (error) {
+      // If there's an error checking the session, redirect to login
       const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackURL", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
