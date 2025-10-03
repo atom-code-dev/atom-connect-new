@@ -46,10 +46,17 @@ export default function AdminPage() {
   const [error, setError] = useState("")
 
   useEffect(() => {
+    // Only redirect if we're sure the user is unauthenticated and not in a loading state
+    if (status === "unauthenticated" && !authPending) {
+      router.push("/login");
+    }
+  }, [status, authPending, router]);
+
+  useEffect(() => {
     if (isAuthenticated && user?.role === "ADMIN") {
       fetchDashboardData()
     }
-  }, [status, user])
+  }, [isAuthenticated, user])
 
   const fetchDashboardData = async () => {
     try {

@@ -21,6 +21,13 @@ export default function OrganizationPage() {
   const { isAuthenticated, user, status, isPending: authPending } = useAuth()
   const router = useRouter()
 
+  useEffect(() => {
+    // Only redirect if we're sure the user is unauthenticated and not in a loading state
+    if (status === "unauthenticated" && !authPending) {
+      router.push("/login");
+    }
+  }, [status, authPending, router]);
+
   if (authPending) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

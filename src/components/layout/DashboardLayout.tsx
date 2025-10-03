@@ -118,12 +118,6 @@ export function DashboardLayout({ children, userRole, userName }: DashboardLayou
   const router = useRouter()
   const pathname = usePathname()
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/")
-    }
-  }, [status, router])
-
   const isDashboardPage = pathname === `/${userRole.toLowerCase()}`
 
   if (authPending || false) {
